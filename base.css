@@ -1,8 +1,23 @@
 h1 {
 	text-align: center;
-	margin-bottom: 10%;
+	margin-bottom: 2%;
 }
 
-input {
+#graph {
+	position: absolute;
+	left: 210px;
+	width: 100%;
+	height: 100%;
+	background-color: #0F0;
+}
 
+#control_panel {
+	position: absolute;
+	border: outset 1px gray;
+	background: #ffffcc;
+	height: 95%;
+	width: 200px;
+}
+#tools {
+	margin-top: 100px;
 }

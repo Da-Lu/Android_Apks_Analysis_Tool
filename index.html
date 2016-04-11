@@ -6,8 +6,21 @@
 </head>
 <body>
 	<h1>Apks Analysis Tool</h1>
-	<form> 
-	<input type="file" name="choose_apks" id="C_apks" />Choose apks
-	</form>
+	<div id="graph_box">
+		<svg id="graph" width="800px" height="800px"></svg>
+	</div>
+	<div id="control_panel">
+		<form>
+			<div id="upload_apks">
+				<input type="file" name="choose_apks" />
+				<input type="submit" name="submit" />
+			</div>
+			<div id="tools">
+				<input type="checkbox" name="covert" value="covert" checked />COVERT<br>
+				<input type="checkbox" name="didfail" value="didfail" checked />DidFail<br>
+				<input type="checkbox" name="iccta" value="iccta" checked />IccTA<br>
+			</div>
+		</form>
+	</div>
 </body>
 </html>
