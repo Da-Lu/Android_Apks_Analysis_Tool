@@ -1,19 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+	<meta charset="utf-8"/>
 	<title>Android Apks Analysis Tool</title>
+	<!--Style sheet-->
+	<link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="base.css" />
 </head>
 <body>
-	<h1>Apks Analysis Tool</h1>
+	<div class="jumbotron">
+		<h1>Apks Analysis Tool</h1>
+	</div>
 	<div id="graph_box">
 		<svg id="graph" width="800px" height="800px"></svg>
 	</div>
 	<div id="control_panel">
-		<form>
+		<form id="file-form" action="Python/index.py" method="POST">
 			<div id="upload_apks">
-				<input type="file" name="choose_apks" />
-				<input type="submit" name="submit" />
+				<input type="file" id="file-select" name="apks[]" multiple/>
+				<button type="submit" id="upload-button" name="submit">Upload</button>
 			</div>
 			<div id="tools">
 				<input type="checkbox" name="covert" value="covert" checked />COVERT<br>
@@ -22,5 +27,56 @@
 			</div>
 		</form>
 	</div>
+	<!-- Libraries -->
+	<script src="libs/jquery/dist/jquery.min.js"></script>
+    <script src="libs/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- Scripts -->
+    <script type="text/javascript">
+    	$(document).ready(function() {
+    		var $form = $("#file-form");
+    		var $fileselect = $("#file-select");
+    		var $uploadBtn = $("#upload-button");
+
+    		$form.submit(function (event){
+    			event.preventDefault();
+    			//update btn text
+    			$uploadBtn.text("Uploading");
+    			//create a formData Object
+    			var formData = new FormData();
+    			var apks = $fileselect.get(0).files;
+    			console.log(apks);
+    			for (var i = 0; i < apks.length; i++) {
+    				var apk = apks[i];
+    				// if (!apk.name.match("*.apk")) {
+    				// 	continue;
+    				// }
+    				formData.append("apks[]", apk, apk.name);
+    			}
+
+    			//Ajax request
+    			$.ajax({
+		    		url: './Python/index.py',
+		    		type: 'POST',
+		    		data: formData,
+		    		contentType: false,
+    				processData: false
+		    	})
+		    	.done(function() {
+		    		console.log("files upload success!");
+		    		$uploadBtn.text("Upload");
+		    	})
+		    	.fail(function() {
+		    		alert("files upload error!");
+		    		console.log("error");
+		    	})
+		    	.always(function() {
+		    		console.log("complete");
+		    	});
+		    });
+		});
+    	window.onload = function () {
+    		// alert("Window Onload!");
+    	};
+    </script>
 </body>
 </html>
