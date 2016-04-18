@@ -17,7 +17,7 @@
 	<div id="control_panel">
 		<form id="file-form" action="Python/index.py" method="POST">
 			<div id="upload_apks">
-				<input type="file" id="file-select" name="apks[]" multiple/>
+				<input type="file" id="file-select" multiple/>
 				<button type="submit" id="upload-button" name="submit">Upload</button>
 			</div>
 			<div id="tools">
@@ -52,7 +52,7 @@
     				// }
     				formData.append("apks[]", apk, apk.name);
     			}
-
+    			console.log(formData);
     			//Ajax request
     			$.ajax({
 		    		url: './Python/index.py',

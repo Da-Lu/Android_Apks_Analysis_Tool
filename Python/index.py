@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 
 # Turn on debug mode.
-import os
-import cgi
-import cgitb
+import os, sys, stat, cgi, cgitb
 cgitb.enable()
 
 def htmlTop():
@@ -15,27 +13,45 @@ def htmlTop():
 			<title>Android Apks Analysis Tool</title>
 		</head>
 		<body>""")
+
 def htmlTail():
 	print("""
 		</body>
 	</html>
 		""")
-def getData():
-	formData = cgi.FieldStorage()
-	apks = formData["apks[]"]
-	return apks
+def writeFile(upload_dir, fileitem):
+	if not fileitem.file: return
+	fout = open (os.path.join(upload_dir, fileitem.filename), 'wb')
+	while 1:
+		chunk = fileitem.file.read(100000)
+		if not chunk: break
+		fout.write (chunk)
+	fout.close()
+	os.chmod(os.path.join(upload_dir, fileitem.filename), 0o777);
+
+def save_uploaded_file (form_field, upload_dir):
+	"""This saves a file uploaded by an HTML form.
+		The form_field is the name of the file input field from the form.
+		For example, the following form_field would be "file_1":
+			<input name="file_1" type="file">
+		The upload_dir is the directory where the file will be written.
+		If no file was uploaded or if the field does not exist then
+		this does nothing.
+	"""
+	form = cgi.FieldStorage()
+	if form_field not in form: return
+	fileitems = form[form_field]
+	if type(fileitems) is not list:
+		writeFile(upload_dir, fileitems)
+	else:
+		for fileitem in fileitems:
+			writeFile(upload_dir, fileitem)
 
 #main program
 if __name__ == "__main__" :
 	try:
 		htmlTop()
-		formData = cgi.FieldStorage()
-		apks = formData["apks[]"][1]
-		# file_data = getData()[0].value
-		print(apks)
-		# with open ('fileToWrite.apk','w') as fileOutput:
-		# 	fileOutput.wirte(file_data)
-		# 	fileOutput.close()
+		save_uploaded_file("apks[]", "./")
 		htmlTail()
 	except:
 		cgi.print_exception()
