@@ -4,8 +4,8 @@
 import os, sys, stat, cgi, cgitb
 cgitb.enable()
 
-apps_base = "../covert_dist/app_repo/bundle";
-covert_base = "../covert_dist/";
+apps_base = "../../covert_dist/app_repo/bundle";
+covert_base = "../../covert_dist/";
 
 def JsonTop():
 	print("""Content-Type: application/json\n\n
@@ -67,9 +67,11 @@ if __name__ == "__main__" :
 		os.chdir(covert_base);
 		call(["sh", "./convert.sh", "bundle"])
 		#convert output to JSON format
-		
+
 		#send JSON to Front End
-		# print("{\"ack\": \"ok\"}")
+		print("{}");
+		# if true:
+		# else :
 		# htmlTail()
 	except:
 		cgi.print_exception()
