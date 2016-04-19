@@ -4,6 +4,13 @@
 import os, sys, stat, cgi, cgitb
 cgitb.enable()
 
+apps_base = "../covert_dist/app_repo/bundle";
+covert_base = "../covert_dist/";
+
+def JsonTop():
+	print("""Content-Type: application/json\n\n
+		""")
+
 def htmlTop():
 	print("""Content-Type: text/html\n\n
 	<!DOCTYPE html>
@@ -19,6 +26,7 @@ def htmlTail():
 		</body>
 	</html>
 		""")
+
 def writeFile(upload_dir, fileitem):
 	if not fileitem.file: return
 	fout = open (os.path.join(upload_dir, fileitem.filename), 'wb')
@@ -50,8 +58,18 @@ def save_uploaded_file (form_field, upload_dir):
 #main program
 if __name__ == "__main__" :
 	try:
-		htmlTop()
-		save_uploaded_file("apks[]", "./")
-		htmlTail()
+		JsonTop()
+		# htmlTop()
+		#store apks in apps folder
+		save_uploaded_file("apks[]", apps_base)
+		#using Tools to analysis apks
+		from subprocess import call
+		os.chdir(covert_base);
+		call(["sh", "./convert.sh", "bundle"])
+		#convert output to JSON format
+		
+		#send JSON to Front End
+		# print("{\"ack\": \"ok\"}")
+		# htmlTail()
 	except:
 		cgi.print_exception()
