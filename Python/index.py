@@ -1,11 +1,11 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # Turn on debug mode.
 import os, sys, stat, cgi, cgitb
 cgitb.enable()
 
-apps_base = "../../covert_dist/app_repo/bundle";
-covert_base = "../../covert_dist/";
+apps_base = "../../covert_dist/app_repo/bundle"
+covert_base = "../../covert_dist"
 
 def JsonTop():
 	print("""Content-Type: application/json\n\n
@@ -35,7 +35,7 @@ def writeFile(upload_dir, fileitem):
 		if not chunk: break
 		fout.write (chunk)
 	fout.close()
-	os.chmod(os.path.join(upload_dir, fileitem.filename), 0o777);
+	os.chmod(os.path.join(upload_dir, fileitem.filename), 0o777)
 
 def save_uploaded_file (form_field, upload_dir):
 	"""This saves a file uploaded by an HTML form.
@@ -59,19 +59,19 @@ def save_uploaded_file (form_field, upload_dir):
 if __name__ == "__main__" :
 	try:
 		JsonTop()
-		# htmlTop()
 		#store apks in apps folder
 		save_uploaded_file("apks[]", apps_base)
 		#using Tools to analysis apks
-		from subprocess import call
-		os.chdir(covert_base);
-		call(["sh", "./convert.sh", "bundle"])
+		import subprocess
+		os.chdir(covert_base)
+		FNULL = open('./log.txt', 'wb')
+		process = subprocess.Popen(["sh", "./covert.sh", "bundle"], cwd="/var/www/html/covert_dist", stdout=FNULL, stderr=subprocess.STDOUT)
+		process.wait()		
 		#convert output to JSON format
 
 		#send JSON to Front End
-		print("{}");
+		print("{\"ack\":\"ok\"}")
 		# if true:
 		# else :
-		# htmlTail()
 	except:
 		cgi.print_exception()
