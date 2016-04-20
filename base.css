@@ -6,6 +6,11 @@ h1 {
 #graph {
 	position: absolute;
 	left: 210px;
+	width: 1000px;
+	height: 700px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 100px;
 }
 
 #control_panel {
