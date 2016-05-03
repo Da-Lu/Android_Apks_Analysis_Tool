@@ -14,12 +14,12 @@
 		body {
 		  font: 10px sans-serif;
 		}
-		circle.node {
+		.node {
 		  fill: lightsteelblue;
 		  stroke: #555;
 		  stroke-width: 3px;
 		}
-		circle.leaf {
+		.leaf {
 		  stroke: #fff;
 		  stroke-width: 1.5px;
 		}
@@ -65,6 +65,7 @@
     		var $fileselect = $("#file-select");
     		var $uploadBtn = $("#upload-button");
     		var $graph = $("#graph");
+    		drawGraph();
     		$form.submit(function (event){
     			event.preventDefault();
     			//update btn text
@@ -109,6 +110,7 @@
 		    	});
 		    });
 		});
+
 		function drawGraph() {
 				var width = 1000,     // svg width
 				    height = 700,     // svg height
@@ -272,8 +274,8 @@
 
 					vis.attr("opacity", 1e-6)
 					.transition()
-					  .duration(1000)
-					  .attr("opacity", 1);
+					.duration(1000)
+					.attr("opacity", 1);
 				});
 
 				function init() {
@@ -316,13 +318,14 @@
 				  hullg.selectAll("path.hull").remove();
 				  hull = hullg.selectAll("path.hull")
 				      .data(convexHulls(net.nodes, getGroup, off))
-				    .enter().append("path")
+				      .enter().append("path")
 				      .attr("class", "hull")
 				      .attr("d", drawCluster)
 				      .style("fill", function(d) { return fill(d.group); })
 				      .on("click", function(d) {
-				console.log("hull click", d, arguments, this, expand[d.group]);
-				      expand[d.group] = false; init();
+				  console.log("hull click", d, arguments, this, expand[d.group]);
+				      expand[d.group] = false; 
+				      init();
 				    });
 
 				  link = linkg.selectAll("line.link").data(net.links, linkid);
@@ -338,16 +341,16 @@
 				  node = nodeg.selectAll("circle.node").data(net.nodes, nodeid);
 				  node.exit().remove();
 				  node.enter().append("circle")
-				      // if (d.size) -- d.size > 0 when d is a group node.
+				  	  // if (d.size) -- d.size > 0 when d is a group node.
 				      .attr("class", function(d) { return "node" + (d.size?"":" leaf"); })
 				      .attr("r", function(d) { return d.size ? d.size + dr : dr+1; })
 				      .attr("cx", function(d) { return d.x; })
 				      .attr("cy", function(d) { return d.y; })
 				      .style("fill", function(d) { return fill(d.group); })
 				      .on("click", function(d) {
-				console.log("node click", d, arguments, this, expand[d.group]);
+				  console.log("node click", d, arguments, this, expand[d.group]); 
 				        expand[d.group] = !expand[d.group];
-				    init();
+				    	init();
 				      });
 
 				  node.call(force.drag);
