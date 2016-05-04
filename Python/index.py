@@ -17,7 +17,7 @@ def generateJson():
 	for filename in os.listdir('/var/www/html/covert_dist/app_repo/bundle/analysis/merged'):
 		if filename.endswith('.xml'):
 			group_name.append(filename[:filename.rfind('.')])
-			L.append(BeautifulSoup(open(filename), 'lxml'))
+			L.append(BeautifulSoup(open('/var/www/html/covert_dist/app_repo/bundle/analysis/merged/'+filename), 'lxml'))
 	for i, soup in enumerate(L):
 		data = {}
 		data['application_name'] = group_name[i]
