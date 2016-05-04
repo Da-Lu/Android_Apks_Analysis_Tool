@@ -257,7 +257,7 @@
 				   .attr("width", width)
 				   .attr("height", height);
 
-				d3.json("mock.json", function(json) {
+				d3.json("./Python/data.json", function(json) {
 					data = json;
 
 					for (var i=0; i<data.links.length; ++i) {
@@ -310,8 +310,8 @@
 				    .linkStrength(function(l, i) {
 				    return 1;
 				    })
-				    .gravity(0.05)   // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
-				    .charge(-600)    // ... charge is important to turn single-linked groups to the outside
+				    .gravity(0.1)   // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
+				    .charge(-300)    // ... charge is important to turn single-linked groups to the outside
 				    .friction(0.5)   // friction adjusted to get dampened display: less bouncy bouncy ball [Swedish Chef, anyone?]
 				      .start();
 
@@ -323,7 +323,7 @@
 				      .attr("d", drawCluster)
 				      .style("fill", function(d) { return fill(d.group); })
 				      .on("click", function(d) {
-				  console.log("hull click", d, arguments, this, expand[d.group]);
+				 	  console.log("hull click", d, arguments, this, expand[d.group]);
 				      expand[d.group] = false; 
 				      init();
 				    });
@@ -348,9 +348,12 @@
 				      .attr("cy", function(d) { return d.y; })
 				      .style("fill", function(d) { return fill(d.group); })
 				      .on("click", function(d) {
-				  console.log("node click", d, arguments, this, expand[d.group]); 
+				  	  console.log("node click", d, arguments, this, expand[d.group]); 
 				        expand[d.group] = !expand[d.group];
 				    	init();
+				      })
+				      .on("mouseover", function(d) {
+				      	
 				      });
 
 				  node.call(force.drag);
