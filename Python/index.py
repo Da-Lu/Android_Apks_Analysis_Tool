@@ -194,9 +194,7 @@ if __name__ == "__main__" :
 		process.wait()
 		os.chdir("/root")
 		FNULL_2 = open('./log.txt', 'wb')
-		process = subprocess.Popen("export", "didfail=~/didfail");
-		process.wait()
-		process = subprocess.Popen(["~/didfail/cert/run-didfail.sh", "/var/www/html/didfail_result", "/var/www/html/covert_dist/app_repo/bundle/*.apk"], stdout=FNULL, stderr=subprocess.STDOUT)
+		process = subprocess.Popen(["~/didfail/cert/run-didfail.sh", "/var/www/html/didfail_result", "/var/www/html/covert_dist/app_repo/bundle/*.apk"], stdout=FNULL, stderr=subprocess.STDOUT, env={'export': 'didfail=~/didfail'})
 		process.wait()
 		#convert output to JSON format
 		generateJson()
