@@ -220,7 +220,8 @@
 				  for (k=0; k<data.links.length; ++k) {
 				    var e = data.links[k],
 				        u = index(e.source),
-				        v = index(e.target);
+				        v = index(e.target),
+				        c = data.links[k].color;
 				  if (u != v) {
 				    gm[u].link_count++;
 				    gm[v].link_count++;
@@ -228,7 +229,7 @@
 				    u = expand[u] ? nm[e.source.name] : nm[u];
 				    v = expand[v] ? nm[e.target.name] : nm[v];
 				    var i = (u<v ? u+"|"+v : v+"|"+u),
-				        l = lm[i] || (lm[i] = {source:u, target:v, size:0});
+				        l = lm[i] || (lm[i] = {source:u, target:v, size:0, color:c});
 				    l.size += 1;
 				  }
 				  for (i in lm) { links.push(lm[i]); }
@@ -272,14 +273,15 @@
 				   .attr("width", width)
 				   .attr("height", height);
 
-				// d3.json("../covert_dist/data.json", function(json) {
-				d3.json("./mock.json", function(json) {	
+				d3.json("../covert_dist/data.json", function(json) {
+				// d3.json("./mock.json", function(json) {	
 					data = json;
 
 					for (var i=0; i<data.links.length; ++i) {
 					o = data.links[i];
 					o.source = data.nodes[o.source];
 					o.target = data.nodes[o.target];
+					o.color = data.links[i].color;
 					}
 
 					hullg = vis.append("g");
@@ -327,10 +329,10 @@
 				    .linkStrength(function(l, i) {
 				    return 1;
 				    })
-				    .gravity(0.1)   // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
-				    .charge(-300)    // ... charge is important to turn single-linked groups to the outside
+				    .gravity(0.05)   // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
+				    .charge(-600)    // ... charge is important to turn single-linked groups to the outside
 				    .friction(0.5)   // friction adjusted to get dampened display: less bouncy bouncy ball [Swedish Chef, anyone?]
-				      .start();
+				    .start();
 
 				  hullg.selectAll("path.hull").remove();
 				  hull = hullg.selectAll("path.hull")
@@ -353,7 +355,19 @@
 				      .attr("y1", function(d) { return d.source.y; })
 				      .attr("x2", function(d) { return d.target.x; })
 				      .attr("y2", function(d) { return d.target.y; })
-				      .style("stroke-width", function(d) { return d.size || 1; });
+				      .style("stroke-width", function(d) { return d.size || 1; })
+				      .style("stroke", function(d) {
+				      	console.log(d);
+				      	if (d.size != 1) {
+				      		return "grey";
+				      	} else { 
+					      	if(d.color == 1) {
+					      		return "red";
+					      	} else if(d.color == 2) {
+					      		return "blue";
+					      	} 
+				      	}
+				      });
 
 				  node = nodeg.selectAll("circle.node").data(net.nodes, nodeid);
 				  node.exit().remove();
@@ -370,8 +384,20 @@
 				    	init();
 				      })
 				      .on("mouseover", function(d) {
-				      	console.log(d);
-				      	$info.html("<tr><td>"+d.permission+"</td></tr>");
+				      	if (d.hasOwnProperty("nodes")) {
+				      		d.nodes[0].app_permission.forEach(function (item,i) {
+				      			$info.append("<tr><td>"+item.Permission+"</td></tr>");
+				      		});
+				      	} else {
+				      		if(d.permission == undefined){
+				      			$info.html("no permissions");
+				      		} else {
+				      			$info.html("<tr><td>"+d.permission+"</td></tr>");
+				      		}
+				      	}
+				      })
+				      .on("mouseout", function(d) {
+				      	$info.html("");
 				      });
 
 				  node.call(force.drag);

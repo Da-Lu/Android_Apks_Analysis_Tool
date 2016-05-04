@@ -104,6 +104,23 @@ def generateJson():
 								new_intent2['target'] = i
 								if 'source' in new_intent2:
 									links.append(new_intent2)
+	# Tool2 DidFail
+	L= []
+	for filename in os.listdir('/var/www/html/didfail_result'):
+		if filename.endswith('.fd.xml'):
+			L.append(BeautifulSoup(open('/var/www/html/didfail_result/'+filename), 'lxml'))
+	for i, soup in enumerate(L):
+		data = {}
+		for flow in soup.find_all('flow'):
+			if flow.sink.get('component') != None:
+				if next((i for i,x in enumerate(nodes) if flow.sink['component'] in x['name']), None) != None:
+					data['target'] = next((i for i,x in enumerate(nodes) if flow.sink['component'] in x['name']), None)
+					for source in flow.find_all('source'):
+						if next((i for i,x in enumerate(nodes) if source['component'] in x['name']), None) != None:
+							data['source'] = next((i for i,x in enumerate(nodes) if source['component'] in x['name']), None)
+							data['color'] = 2
+							data['name'] = source['method'][1:source['method'].find(':')]
+							links.append(data)
 	seen = set()
 	new_links = []
 	for d in links:
@@ -174,7 +191,13 @@ if __name__ == "__main__" :
 		os.chdir(covert_base)
 		FNULL = open('./log.txt', 'wb')
 		process = subprocess.Popen(["sh", "./covert.sh", "bundle"], cwd="/var/www/html/covert_dist", stdout=FNULL, stderr=subprocess.STDOUT)
-		process.wait()		
+		process.wait()
+		os.chdir("/root")
+		FNULL_2 = open('./log.txt', 'wb')
+		process = subprocess.Popen("export", "didfail=~/didfail");
+		process.wait()
+		process = subprocess.Popen(["~/didfail/cert/run-didfail.sh", "/var/www/html/didfail_result", "/var/www/html/covert_dist/app_repo/bundle/*.apk"], stdout=FNULL, stderr=subprocess.STDOUT)
+		process.wait()
 		#convert output to JSON format
 		generateJson()
 		#send JSON to Front End
