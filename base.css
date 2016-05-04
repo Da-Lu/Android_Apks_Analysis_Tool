@@ -23,3 +23,16 @@ h1 {
 #tools {
 	margin-top: 100px;
 }
+#descBlock {
+	position: absolute;
+	font-size: 13px;
+	line-height: 16px;
+	font-weight: normal;
+	width: 130px;
+	height: 180px;
+	border: 2px solid #74B77E;
+	padding: 5px;
+	color: #74B77E;
+	left: 210px;
+	overflow: auto;
+}

@@ -85,6 +85,7 @@ def generateJson():
 			if 'filter' in node:
 				new_node['filter'] = node['filter']
 			new_node['groupName'] = app['application_name']
+			new_node['app_permission'] = app['permission']
 			nodes.append(new_node)
 		index += 1
 	output['nodes'] = nodes

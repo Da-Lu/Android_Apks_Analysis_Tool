@@ -46,6 +46,13 @@
 	<div id="graph_box">
 		<svg id="graph" width="800px" height="800px"></svg>
 	</div>
+	<div id="descBlock">
+		<span>Permissions:</span>
+		<table>
+			<tr>
+			</tr>
+		</table>
+    </div>
 	<div id="control_panel">
 		<form id="file-form" action="Python/index.py" method="POST">
 			<div id="upload_apks">
@@ -69,6 +76,8 @@
     		var $fileselect = $("#file-select");
     		var $uploadBtn = $("#upload-button");
     		var $graph = $("#graph");
+    		var $info = $("#descBlock");
+
     		drawGraph();
     		$form.submit(function (event){
     			event.preventDefault();
@@ -122,6 +131,8 @@
 				    off = 15,    // cluster hull offset
 				    expand = {}, // expanded clusters
 				    data, net, force, hullg, hull, linkg, link, nodeg, node;
+
+				var $info = $("#descBlock table");
 
 				var curve = d3.svg.line()
 				    .interpolate("cardinal-closed")
@@ -261,7 +272,8 @@
 				   .attr("width", width)
 				   .attr("height", height);
 
-				d3.json("../covert_dist/data.json", function(json) {
+				// d3.json("../covert_dist/data.json", function(json) {
+				d3.json("./mock.json", function(json) {	
 					data = json;
 
 					for (var i=0; i<data.links.length; ++i) {
@@ -315,8 +327,8 @@
 				    .linkStrength(function(l, i) {
 				    return 1;
 				    })
-				    .gravity(0.05)   // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
-				    .charge(-600)    // ... charge is important to turn single-linked groups to the outside
+				    .gravity(0.1)   // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
+				    .charge(-300)    // ... charge is important to turn single-linked groups to the outside
 				    .friction(0.5)   // friction adjusted to get dampened display: less bouncy bouncy ball [Swedish Chef, anyone?]
 				      .start();
 
@@ -358,7 +370,8 @@
 				    	init();
 				      })
 				      .on("mouseover", function(d) {
-				      	
+				      	console.log(d);
+				      	$info.html("<tr><td>"+d.permission+"</td></tr>");
 				      });
 
 				  node.call(force.drag);
