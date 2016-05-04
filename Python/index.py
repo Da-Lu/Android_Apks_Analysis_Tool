@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+#!/usr/bin/env
+# -*- coding: utf-8 -*-
 
 # Turn on debug mode.
 from bs4 import BeautifulSoup
