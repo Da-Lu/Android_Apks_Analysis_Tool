@@ -32,6 +32,11 @@
 		  stroke-opacity: 0.5;
 		  pointer-events: none;
 		}
+		text {
+		  font: 10px sans-serif;
+		  pointer-events: none;
+		  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+		}
 	</style>
 </head>
 <body>
@@ -50,7 +55,6 @@
 			<div id="tools">
 				<input type="checkbox" name="covert" value="covert" checked />COVERT<br>
 				<input type="checkbox" name="didfail" value="didfail" checked />DidFail<br>
-				<input type="checkbox" name="iccta" value="iccta" checked />IccTA<br>
 			</div>
 		</form>
 	</div>
@@ -65,7 +69,7 @@
     		var $fileselect = $("#file-select");
     		var $uploadBtn = $("#upload-button");
     		var $graph = $("#graph");
-    		// drawGraph();
+    		drawGraph();
     		$form.submit(function (event){
     			event.preventDefault();
     			//update btn text
@@ -257,7 +261,7 @@
 				   .attr("width", width)
 				   .attr("height", height);
 
-				d3.json("../covert_dist/data.json", function(json) {
+				d3.json("mock.json", function(json) {
 					data = json;
 
 					for (var i=0; i<data.links.length; ++i) {
@@ -269,6 +273,7 @@
 					hullg = vis.append("g");
 					linkg = vis.append("g");
 					nodeg = vis.append("g");
+					nodeTextg = vis.append("g");
 
 					init();
 
@@ -310,8 +315,8 @@
 				    .linkStrength(function(l, i) {
 				    return 1;
 				    })
-				    .gravity(0.1)   // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
-				    .charge(-300)    // ... charge is important to turn single-linked groups to the outside
+				    .gravity(0.05)   // gravity+charge tweaked to ensure good 'grouped' view (e.g. green group not smack between blue&orange, ...
+				    .charge(-600)    // ... charge is important to turn single-linked groups to the outside
 				    .friction(0.5)   // friction adjusted to get dampened display: less bouncy bouncy ball [Swedish Chef, anyone?]
 				      .start();
 
@@ -358,6 +363,15 @@
 
 				  node.call(force.drag);
 
+				  nodeTextg.selectAll("text").remove();
+				  nodeText = nodeTextg.selectAll("text")
+				  		.data(net.nodes)
+				  		.enter().append("text")
+					    .attr("x", 8)
+					    .attr("y", ".31em")
+					    .text(function(d) { if (d.hasOwnProperty("nodes")) { return d.nodes[0].groupName; } else { var splits = d.name.split("."); return splits[splits.length - 1];}})
+					    .style("fill", function(d) {if (d.hasOwnProperty("nodes")) { return "blue"; }});
+
 				  force.on("tick", function() {
 				    if (!hull.empty()) {
 				      hull.data(convexHulls(net.nodes, getGroup, off))
@@ -371,6 +385,9 @@
 
 				    node.attr("cx", function(d) { return d.x; })
 				        .attr("cy", function(d) { return d.y; });
+
+				    nodeText.attr("dx", function(d) { return d.x; })
+				        .attr("dy", function(d) { return d.y; });
 				  });
 				}
 		}
