@@ -175,7 +175,7 @@ if __name__ == "__main__" :
 		process = subprocess.Popen(["sh", "./covert.sh", "bundle"], cwd="/var/www/html/covert_dist", stdout=FNULL, stderr=subprocess.STDOUT)
 		process.wait()		
 		#convert output to JSON format
-		# generateJson()
+		generateJson()
 		#send JSON to Front End
 		print("{\"ack\":\"ok\"}")
 		# if true:
