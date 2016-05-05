@@ -4,6 +4,7 @@
 	<meta charset="utf-8"/>
 	<title>Android Apks Analysis Tool</title>
 	<!--Style sheet-->
+	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/ui-darkness/jquery-ui.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="base.css" />
 	<!-- Custome Style-->
@@ -30,7 +31,7 @@
 		line.link {
 		  stroke: #333;
 		  stroke-opacity: 0.5;
-		  pointer-events: none;
+		  pointer-events: all;
 		}
 		text {
 		  font: 10px sans-serif;
@@ -53,6 +54,10 @@
 			</tr>
 		</table>
     </div>
+    <div id="precision">
+		<span>Precision:</span><span class="pre"></span><br/>
+		<span>Recall:</span><span class="recal"></span>
+    </div>
 	<div id="control_panel">
 		<form id="file-form" action="Python/index.py" method="POST">
 			<div id="upload_apks">
@@ -65,10 +70,14 @@
 			</div>
 		</form>
 	</div>
+	<div id="dialog" title="Confirm ICC Attack Path">
+	</div>
 	<!-- Libraries -->
 	<script src="libs/jquery/dist/jquery.min.js"></script>
     <script src="libs/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="http://d3js.org/d3.v2.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+
     <!-- Scripts -->
     <script type="text/javascript">
     	$(document).ready(function() {
@@ -149,9 +158,14 @@
 				    expand = {}, // expanded clusters
 				    data, net, force, hullg, hull, linkg, link, nodeg, node;
 
+				var count;
+
 				var $info = $("#descBlock table");
 				var $covert = $("#covert");
-    			var $didfail = $("#didfail");	
+    			var $didfail = $("#didfail");
+
+    			$("#precision .pre").html("%100");
+    			$("#precision .recal").html("%100");
 
 				var curve = d3.svg.line()
 				    .interpolate("cardinal-closed")
@@ -240,7 +254,8 @@
 				    var e = data.links[k],
 				        u = index(e.source),
 				        v = index(e.target),
-				        c = data.links[k].color;
+				        c = data.links[k].color,
+				        n = data.links[k].name;
 				  if (u != v) {
 				    gm[u].link_count++;
 				    gm[v].link_count++;
@@ -248,7 +263,7 @@
 				    u = expand[u] ? nm[e.source.name] : nm[u];
 				    v = expand[v] ? nm[e.target.name] : nm[v];
 				    var i = (u<v ? u+"|"+v : v+"|"+u),
-				        l = lm[i] || (lm[i] = {source:u, target:v, size:0, color:c});
+				        l = lm[i] || (lm[i] = {source:u, target:v, size:0, color:c, name: n});
 				    l.size += 1;
 				  }
 				  for (i in lm) { links.push(lm[i]); }
@@ -292,9 +307,10 @@
 				   .attr("width", width)
 				   .attr("height", height);
 
-				d3.json("../data.json", function(json) {
-				// d3.json("./mock.json", function(json) {	
+				// d3.json("../data.json", function(json) {
+				d3.json("./mock.json", function(json) {	
 					data = json;
+					count = data.links.length;
 
 					for (var i=0; i<data.links.length; ++i) {
 					o = data.links[i];
@@ -365,6 +381,22 @@
 				      init();
 				    });
 
+				  //build arrow
+				  vis.append("defs").selectAll("marker")
+				      .data(["suit", "licensing", "resolved"])
+				      .enter().append("marker")
+				      .attr("id", function(d) { return d; })
+				      .attr("viewBox", "0 -5 10 10")
+				      .attr("refX", 25)
+				      .attr("refY", 0)
+				      .attr("markerWidth", 6)
+				      .attr("markerHeight", 6)
+				      .attr("orient", "auto")
+				      .append("path")
+				      .attr("d", "M0,-5L10,0L0,5 L10,0 L0, -5")
+				      .style("stroke", "#4679BD")
+				      .style("opacity", "0.6");
+
 				  link = linkg.selectAll("line.link").data(net.links, linkid);
 				  link.exit().remove();
 				  link.enter().append("line")
@@ -373,6 +405,11 @@
 				      .attr("y1", function(d) { return d.source.y; })
 				      .attr("x2", function(d) { return d.target.x; })
 				      .attr("y2", function(d) { return d.target.y; })
+				      .style("marker-end",  function(d){
+				      		if (d.size == 1) {
+				      			return "url(#suit)"
+				      		} 
+				      })
 				      .style("stroke-width", function(d) { return d.size || 1; })
 				      .style("stroke", function(d) {
 				      	console.log(d);
@@ -393,6 +430,28 @@
 					      	} else if(d.color == 2 && !$didfail.is(':checked')) {
 					      		return 0.1;
 					      	} 
+				      })
+				      .on('mouseover', function (d){
+				      	if (d.size == 1){
+					      	var $this = $(this);
+					      	$("#dialog").html("<p>The ICC attack name is: " + d.name + "</p>" + "<p>Is this a real ICC attack?</p>");
+					      	$("#dialog").dialog({
+								modal: true,
+								resizable: false,
+								buttons: {
+									"Yes": function() {
+										$(this).dialog("close");
+									},
+									"No": function() {
+										$this.hide();
+										$(this).dialog("close");
+										count--;
+										$("#precision .pre").html( count / data.links.length);
+    									$("#precision .recal").html("%100");
+									}
+								}
+							});
+				      	}
 				      });
 
 				  node = nodeg.selectAll("circle.node").data(net.nodes, nodeid);
