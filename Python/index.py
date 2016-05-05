@@ -8,7 +8,7 @@ cgitb.enable()
 
 apps_base = "../../covert_dist/app_repo/bundle"
 covert_base = "../../covert_dist"
-www_base = "../../../"
+www_base = "/var/www/"
 
 def generateJson():
 	L, result_list = [], []
@@ -195,8 +195,8 @@ if __name__ == "__main__" :
 		process.wait()
 		os.chdir(www_base)
 		FNULL_2 = open('./log.txt', 'wb')
-		process = subprocess.Popen(["./didfail/cert/run-didfail.sh", "./html/didfail_result", "./html/covert_dist/app_repo/bundle/*.apk"], stdout=FNULL_2, stderr=subprocess.STDOUT)
-		process.wait()
+		process_2 = subprocess.Popen(["./didfail/cert/run-didfail.sh", "./html/didfail_result", "./html/covert_dist/app_repo/bundle/*.apk"], stdout=FNULL_2, stderr=subprocess.STDOUT)
+		process_2.wait()
 		#convert output to JSON format
 		generateJson()
 		#send JSON to Front End
