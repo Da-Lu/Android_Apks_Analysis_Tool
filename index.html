@@ -60,8 +60,8 @@
 				<button type="submit" id="upload-button" name="submit">Upload</button>
 			</div>
 			<div id="tools">
-				<input type="checkbox" name="covert" value="covert" checked />COVERT<br>
-				<input type="checkbox" name="didfail" value="didfail" checked />DidFail<br>
+				<input id="covert" type="checkbox" name="covert" value="covert" checked />COVERT<br>
+				<input id="didfail" type="checkbox" name="didfail" value="didfail" checked />DidFail<br>
 			</div>
 		</form>
 	</div>
@@ -77,8 +77,23 @@
     		var $uploadBtn = $("#upload-button");
     		var $graph = $("#graph");
     		var $info = $("#descBlock");
+    		var $covert = $('#covert');
+    		var $didfail = $('#didfail');
+    		var $svg = $('#graph');
+
+    		//set initial state.
+		    $covert.val($(this).is(':checked'));
+		    $didfail.val($(this).is(':checked'));
 
     		drawGraph();
+    		$covert.change(function() {
+    			$svg.html("");
+				drawGraph();
+			});
+			$didfail.change(function() {
+    			$svg.html("");
+				drawGraph();
+			});
     		$form.submit(function (event){
     			event.preventDefault();
     			//update btn text
@@ -133,6 +148,8 @@
 				    data, net, force, hullg, hull, linkg, link, nodeg, node;
 
 				var $info = $("#descBlock table");
+				var $covert = $("#covert");
+    			var $didfail = $("#didfail");	
 
 				var curve = d3.svg.line()
 				    .interpolate("cardinal-closed")
@@ -273,8 +290,8 @@
 				   .attr("width", width)
 				   .attr("height", height);
 
-				d3.json("../data.json", function(json) {
-				// d3.json("./mock.json", function(json) {	
+				// d3.json("../data.json", function(json) {
+				d3.json("./mock.json", function(json) {	
 					data = json;
 
 					for (var i=0; i<data.links.length; ++i) {
@@ -342,7 +359,6 @@
 				      .attr("d", drawCluster)
 				      .style("fill", function(d) { return fill(d.group); })
 				      .on("click", function(d) {
-				 	  console.log("hull click", d, arguments, this, expand[d.group]);
 				      expand[d.group] = false; 
 				      init();
 				    });
@@ -367,6 +383,14 @@
 					      		return "blue";
 					      	} 
 				      	}
+				      })
+				      .style("opacity", function(d) {
+				      	console.log($covert.is(':checked'));
+				      	if(d.color == 1 && !$covert.is(':checked')) {
+					      		return 0.1;
+					      	} else if(d.color == 2 && !$didfail.is(':checked')) {
+					      		return 0.1;
+					      	} 
 				      });
 
 				  node = nodeg.selectAll("circle.node").data(net.nodes, nodeid);
@@ -428,6 +452,7 @@
 				    nodeText.attr("dx", function(d) { return d.x; })
 				        .attr("dy", function(d) { return d.y; });
 				  });
+
 				}
 		}
     </script>

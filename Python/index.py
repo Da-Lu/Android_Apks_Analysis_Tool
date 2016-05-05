@@ -107,21 +107,30 @@ def generateJson():
 									links.append(new_intent2)
 	# Tool2 DidFail
 	L= []
+	group_name = []
 	for filename in os.listdir('/var/www/html/didfail_result'):
 		if filename.endswith('.fd.xml'):
+			group_name.append(filename[:filename.find('.')])
 			L.append(BeautifulSoup(open('/var/www/html/didfail_result/'+filename), 'lxml'))
 	for i, soup in enumerate(L):
 		data = {}
 		for flow in soup.find_all('flow'):
 			if flow.sink.get('component') != None:
-				if next((i for i,x in enumerate(nodes) if flow.sink['component'] in x['name']), None) != None:
-					data['target'] = next((i for i,x in enumerate(nodes) if flow.sink['component'] in x['name']), None)
-					for source in flow.find_all('source'):
-						if next((i for i,x in enumerate(nodes) if source['component'] in x['name']), None) != None:
-							data['source'] = next((i for i,x in enumerate(nodes) if source['component'] in x['name']), None)
-							data['color'] = 2
-							data['name'] = source['method'][1:source['method'].find(':')]
-							links.append(data)
+				new_node = {}
+				new_node['name'] = flow.sink['component']
+				new_node['app_permission'] = []
+				new_node['group_name'] = group_name[i]
+				for x in nodes:
+					if group_name[i] == x['groupName']:
+						new_node['group'] = x['group']
+				nodes.append(new_node)
+				data['target'] = next((i for i,x in enumerate(nodes) if flow.sink['component'] in x['name']), None)
+				for source in flow.find_all('source'):
+					if next((i for i,x in enumerate(nodes) if source['component'] in x['name']), None) != None:
+						data['source'] = next((i for i,x in enumerate(nodes) if source['component'] in x['name']), None)
+						data['color'] = 2
+						data['name'] = source['method'][1:source['method'].find(':')]
+						links.append(data)
 	seen = set()
 	new_links = []
 	for d in links:
