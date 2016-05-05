@@ -8,6 +8,7 @@ cgitb.enable()
 
 apps_base = "../../covert_dist/app_repo/bundle"
 covert_base = "../../covert_dist"
+html_base = "../../"
 
 def generateJson():
 	L, result_list = [], []
@@ -188,15 +189,15 @@ if __name__ == "__main__" :
 		save_uploaded_file("apks[]", apps_base)
 		#using Tools to analysis apks
 		import subprocess
-		os.chdir(covert_base)
-		FNULL = open('./log.txt', 'wb')
-		process = subprocess.Popen(["sh", "./covert.sh", "bundle"], cwd="/var/www/html/covert_dist", stdout=FNULL, stderr=subprocess.STDOUT)
-		process.wait()
-		os.chdir("/root")
+		# os.chdir(covert_base)
+		# FNULL = open('./log.txt', 'wb')
+		# process = subprocess.Popen(["sh", "./covert.sh", "bundle"], cwd="/var/www/html/covert_dist", stdout=FNULL, stderr=subprocess.STDOUT)
+		# process.wait()
+		os.chdir(html_base)
 		FNULL_2 = open('./log.txt', 'wb')
-		my_env = os.environ
-		my_env["didfail"] = "~/didfai"
-		process = subprocess.Popen(["~/didfail/cert/run-didfail.sh", "/var/www/html/didfail_result", "/var/www/html/covert_dist/app_repo/bundle/*.apk"], stdout=FNULL, stderr=subprocess.STDOUT, env=my_env)
+		# my_env = os.environ
+		# my_env["didfail"] = "/root/didfail"
+		process = subprocess.Popen(["./didfail/cert/run-didfail.sh", "./didfail_result", "./covert_dist/app_repo/bundle/*.apk"], stdout=FNULL, stderr=subprocess.STDOUT)
 		process.wait()
 		#convert output to JSON format
 		generateJson()
