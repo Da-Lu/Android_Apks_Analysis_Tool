@@ -197,7 +197,7 @@ if __name__ == "__main__" :
 		FNULL_2 = open('./log.txt', 'wb')
 		# my_env = os.environ
 		# my_env["didfail"] = "/root/didfail"
-		process = subprocess.Popen(["./didfail/cert/run-didfail.sh", "./didfail_result", "./covert_dist/app_repo/bundle/*.apk"], stdout=FNULL, stderr=subprocess.STDOUT)
+		process = subprocess.Popen(["./didfail/cert/run-didfail.sh", "./didfail_result", "./covert_dist/app_repo/bundle/*.apk"], stdout=FNULL_2, stderr=subprocess.STDOUT)
 		process.wait()
 		#convert output to JSON format
 		generateJson()
