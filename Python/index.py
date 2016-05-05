@@ -130,7 +130,7 @@ def generateJson():
 			seen.add(t)
 			new_links.append(d)
 	output['links'] = new_links
-	with open('data.json', 'w') as f:
+	with open('/var/www/html/data.json', 'w') as f:
 		json.dump(output, f)
 
 def JsonTop():
