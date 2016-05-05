@@ -89,7 +89,7 @@ def generateJson():
 			new_node['app_permission'] = app['permission']
 			nodes.append(new_node)
 		index += 1
-	output['nodes'] = nodes
+
 	for app in result_list:
 		for intent in app['intent']:
 			new_intent2 = {}
@@ -131,6 +131,7 @@ def generateJson():
 						data['color'] = 2
 						data['name'] = source['method'][1:source['method'].find(':')]
 						links.append(data)
+	output['nodes'] = nodes
 	seen = set()
 	new_links = []
 	for d in links:
