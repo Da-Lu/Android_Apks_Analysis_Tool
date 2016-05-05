@@ -84,8 +84,8 @@
     		//set initial state.
 		    $covert.val($(this).is(':checked'));
 		    $didfail.val($(this).is(':checked'));
-
-		    $svg.html("");
+			
+			$svg.html("");
     		drawGraph();
     		$covert.change(function() {
     			$svg.html("");
@@ -128,6 +128,7 @@
 		    		$uploadBtn.text("Upload");
 		    		$uploadBtn.attr("disabled", false);
 		    		$graph.css("background-image","")
+		    		$svg.html("");
 		    		drawGraph();
 		    	})
 		    	.fail(function() {
